@@ -1,0 +1,43 @@
+server:
+  name: "GoIRCd Server"
+  host: "0.0.0.0"
+  port: 6667
+  description: "A Go IRC Server"
+  motd: "goircd.motd"
+  max_clients: 100
+  timeout: 300
+
+logging:
+  level: "debug"
+  max_size: 10    # MB
+  max_age: 30     # days
+  compress: true
+  console: true
+
+security:
+  require_auth: false
+  max_nick_length: 16
+  max_channel_name: 50
+  banned_nicks:
+    - "admin"
+    - "root"
+    - "server"
+  allowed_hosts:
+    - "*"
+  operators:
+    - nick: "admin"
+      password: "8O4fzT+EgbM08Je/Cxu5Ig$tZUksSRo7Vs77RcLx2tjxWO7OETMgRSOnL7sJIeAtkY"
+      host: "*"
+
+channels:
+  max_channels: 20
+  max_users_per_channel: 100
+  default_channels:
+    - "#general"
+    - "#help"
+  auto_join: true
+
+users:
+  max_idle_time: 600    # seconds
+  ping_interval: 60     # seconds
+  max_message_length: 512
