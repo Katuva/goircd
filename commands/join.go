@@ -50,7 +50,7 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 			continue
 		}
 
-		if len(client.GetChannels()) >= cfg.Channels.MaxChannels {
+		if len(client.GetChannels()) > cfg.Channels.MaxChannels {
 			client.SendNumeric(utils.ERR_TOOMANYCHANNELS, channelName+" :You have joined too many channels")
 			continue
 		}
@@ -67,10 +67,6 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 			if len(channelName) > cfg.Security.MaxChannelName {
 				client.SendNumeric(utils.ERR_BADCHANMASK, channelName+" :Channel name too long")
 				return
-			}
-
-			if len(c.server.GetAllChannels()) >= cfg.Channels.MaxChannels {
-				client.SendNumeric(utils.ERR_TOOMANYCHANNELS, channelName+" :Max channels reached")
 			}
 
 			channel = c.server.CreateChannel(channelName)
@@ -120,7 +116,7 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 			client.SendNumeric(utils.RPL_NOTOPIC, channelName+" :No topic is set")
 		}
 
-		sendNamReply(client, channel)
+		sendNameReply(client, channel)
 	}
 }
 
@@ -128,7 +124,7 @@ func (c *JoinCommand) Help() string {
 	return "JOIN <channel>{,<channel>} [<key>{,<key>}] - Joins the specified channels"
 }
 
-func sendNamReply(client *server.Client, channel *server.Channel) {
+func sendNameReply(client *server.Client, channel *server.Channel) {
 	var nickList strings.Builder
 
 	for _, member := range channel.GetClients() {
@@ -152,6 +148,6 @@ func sendNamReply(client *server.Client, channel *server.Channel) {
 		chanPrefix = "*"
 	}
 
-	client.SendNumeric(utils.RPL_NAMREPLY, chanPrefix+" "+channel.Name+" :"+nickList.String())
+	client.SendNumeric(utils.RPL_NAMEREPLY, chanPrefix+" "+channel.Name+" :"+nickList.String())
 	client.SendNumeric(utils.RPL_ENDOFNAMES, channel.Name+" :End of NAMES list")
 }

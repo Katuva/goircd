@@ -15,10 +15,12 @@ type Client struct {
 	User        string
 	RealName    string
 	Host        string
+	Vhost       string
 	channels    map[string]*Channel
 	registered  bool
 	isOperator  bool
 	isAway      bool
+	Whois       string
 	AwayMessage string
 	lastPing    time.Time
 	mu          sync.RWMutex

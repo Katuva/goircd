@@ -47,6 +47,8 @@ type SecurityConfig struct {
 
 type Operator struct {
 	Nick     string `yaml:"nick"`
+	Whois    string `yaml:"whois"`
+	Vhost    string `yaml:"vhost"`
 	Password string `yaml:"password"`
 	Host     string `yaml:"host"`
 }

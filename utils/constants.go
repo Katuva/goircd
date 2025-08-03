@@ -38,7 +38,7 @@ const (
 	RPL_VERSION         = 351 // "<version>.<debuglevel> <server> :<comments>"
 	RPL_WHOREPLY        = 352 // "<channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real name>"
 	RPL_ENDOFWHO        = 315 // "<name> :End of WHO list"
-	RPL_NAMREPLY        = 353 // "( "=" / "*" / "@" ) <channel> :[ "@" / "+" ] <nick> *( " " [ "@" / "+" ] <nick> )"
+	RPL_NAMEREPLY       = 353 // "( "=" / "*" / "@" ) <channel> :[ "@" / "+" ] <nick> *( " " [ "@" / "+" ] <nick> )"
 	RPL_ENDOFNAMES      = 366 // "<channel> :End of NAMES list"
 	RPL_LINKS           = 364 // "<mask> <server> :<hopcount> <server info>"
 	RPL_ENDOFLINKS      = 365 // "<mask> :End of LINKS list"

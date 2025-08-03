@@ -8,7 +8,7 @@ server:
   timeout: 300
 
 logging:
-  level: "debug"
+  level: "info"
   max_size: 10    # MB
   max_age: 30     # days
   compress: true
@@ -22,10 +22,13 @@ security:
     - "admin"
     - "root"
     - "server"
+    - "ircop"
   allowed_hosts:
     - "*"
   operators:
     - nick: "admin"
+      whois: "Server admin"
+      vhost: "goircd.dev"
       password: "8O4fzT+EgbM08Je/Cxu5Ig$tZUksSRo7Vs77RcLx2tjxWO7OETMgRSOnL7sJIeAtkY"
       host: "*"
 
@@ -36,7 +39,7 @@ channels:
   default_channels:
     - "#general"
     - "#help"
-  auto_join: true
+  auto_join: false
 
 users:
   max_idle_time: 600    # seconds

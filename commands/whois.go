@@ -42,12 +42,23 @@ func (c *WhoisCommand) Execute(client *server.Client, params string) {
 		return
 	}
 
-	client.SendNumeric(utils.RPL_WHOISUSER, targetNick+" "+targetClient.User+" "+targetClient.Host+" * :"+targetClient.RealName)
+	host := targetClient.Host
+
+	if targetClient.IsOperator() && targetClient.Vhost != "" {
+		host = targetClient.Vhost
+	}
+
+	client.SendNumeric(utils.RPL_WHOISUSER, targetNick+" "+targetClient.User+" "+host+" * :"+targetClient.RealName)
 
 	client.SendNumeric(utils.RPL_WHOISSERVER, targetNick+" "+utils.SERVER_NAME+" :"+utils.SERVER_VERSION)
 
 	if targetClient.IsOperator() {
-		client.SendNumeric(utils.RPL_WHOISOPERATOR, targetNick+" :is an IRC operator")
+		whois := "is an IRC operator"
+
+		if targetClient.Whois != "" {
+			whois += ": " + targetClient.Whois
+		}
+		client.SendNumeric(utils.RPL_WHOISOPERATOR, targetNick+" :"+whois)
 	}
 
 	idleTime := int(targetClient.GetIdleTime().Seconds())

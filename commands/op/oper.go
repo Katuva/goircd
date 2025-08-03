@@ -46,6 +46,15 @@ func (c *OperCommand) Execute(client *server.Client, params string) {
 			if hash.Verify(password, operator.Password) {
 				if utils.MatchesHost(client.Host, operator.Host) {
 					client.SetOperator(true)
+
+					if operator.Whois != "" {
+						client.Whois = operator.Whois
+					}
+
+					if operator.Vhost != "" {
+						client.Vhost = operator.Vhost
+					}
+
 					client.SendNumeric(utils.RPL_YOUREOPER, ":You are now an IRC operator")
 					client.SendMessage(utils.FormatUserMask(client.Nick, client.User, client.Host), "MODE", client.Nick, "+o")
 					logger.Info("IRCOP: User %s has logged in using %s", client.Nick, username)
