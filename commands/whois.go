@@ -71,6 +71,10 @@ func (c *WhoisCommand) Execute(client *server.Client, params string) {
 		client.SendNumeric(utils.RPL_WHOISCHANNELS, targetNick+" :"+channelList.String())
 	}
 
+	if targetClient.IsAway() {
+		client.SendNumeric(utils.RPL_AWAY, targetClient.Nick+" :"+targetClient.AwayMessage)
+	}
+
 	client.SendNumeric(utils.RPL_ENDOFWHOIS, targetNick+" :End of WHOIS list")
 }
 

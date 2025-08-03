@@ -8,35 +8,42 @@ import (
 	"goircd/logger"
 	"goircd/utils"
 	"net"
+	"os"
 	"strings"
 	"sync"
 )
 
 type Server struct {
-	host      string
-	port      int
-	listener  net.Listener
-	clients   map[string]*Client
-	channels  map[string]*Channel
-	commands  map[string]Command
-	mu        sync.RWMutex
-	shutdown  chan struct{}
-	waitGroup sync.WaitGroup
+	host           string
+	port           int
+	listener       net.Listener
+	clients        map[string]*Client
+	channels       map[string]*Channel
+	commands       map[string]Command
+	mu             sync.RWMutex
+	shutdown       chan struct{}
+	waitGroup      sync.WaitGroup
+	shutdownCmd    chan string
+	isShuttingDown bool
+	shutdownOnce   sync.Once
 }
 
 func NewServer(host string, port int) (*Server, error) {
 	server := &Server{
-		host:     host,
-		port:     port,
-		clients:  make(map[string]*Client),
-		channels: make(map[string]*Channel),
-		commands: make(map[string]Command),
-		shutdown: make(chan struct{}),
+		host:        host,
+		port:        port,
+		clients:     make(map[string]*Client),
+		channels:    make(map[string]*Channel),
+		commands:    make(map[string]Command),
+		shutdown:    make(chan struct{}),
+		shutdownCmd: make(chan string, 1),
 	}
 
 	if err := server.loadCommands(); err != nil {
 		logger.Fatal("failed to load commands: %w", err)
 	}
+
+	go server.handleShutdown()
 
 	return server, nil
 }
@@ -194,25 +201,62 @@ func (s *Server) CreateChannel(name string) *Channel {
 	return channel
 }
 
+func (s *Server) handleShutdown() {
+	reason := <-s.shutdownCmd
+	s.doShutdown(reason)
+}
+
+func (s *Server) doShutdown(reason ...string) {
+	s.shutdownOnce.Do(func() {
+		logger.Info("Server shutting down...")
+
+		var shutdownReason string
+		if len(reason) > 0 {
+			shutdownReason = "Server is shutting down: " + reason[0]
+		} else {
+			shutdownReason = "Server is shutting down"
+		}
+
+		close(s.shutdown)
+
+		if s.listener != nil {
+			s.listener.Close()
+		}
+
+		shutdownMsg := ":" + utils.SERVER_NAME + " NOTICE * :" + shutdownReason
+
+		s.mu.RLock()
+		for _, client := range s.clients {
+			client.Send(shutdownMsg)
+			client.Close()
+		}
+		s.mu.RUnlock()
+
+		s.waitGroup.Wait()
+
+		logger.Info("Server shutdown complete")
+
+		os.Exit(0)
+	})
+}
+
+func (s *Server) ShutdownAsync(reason ...string) {
+	var shutdownReason string
+	if len(reason) > 0 {
+		shutdownReason = reason[0]
+	}
+
+	select {
+	case s.shutdownCmd <- shutdownReason:
+		// Shutdown initiated
+	default:
+		// Shutdown already in progress
+	}
+}
+
+// Shutdown initiates a synchronous shutdown (for signal handlers)
 func (s *Server) Shutdown() {
-	logger.Info("Server shutting down...")
-
-	close(s.shutdown)
-
-	if s.listener != nil {
-		s.listener.Close()
-	}
-
-	shutdownMsg := ":" + utils.SERVER_NAME + " NOTICE * :Server is shutting down"
-
-	for _, client := range s.clients {
-		client.Send(shutdownMsg)
-		client.Close()
-	}
-
-	s.waitGroup.Wait()
-
-	logger.Info("Server shutdown complete")
+	s.doShutdown()
 }
 
 func SendWelcomeMessages(client *Client) {

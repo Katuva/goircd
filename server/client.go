@@ -9,18 +9,20 @@ import (
 )
 
 type Client struct {
-	conn       net.Conn
-	server     *Server
-	Nick       string
-	User       string
-	RealName   string
-	Host       string
-	channels   map[string]*Channel
-	registered bool
-	isOperator bool
-	lastPing   time.Time
-	mu         sync.RWMutex
-	sendMu     sync.Mutex
+	conn        net.Conn
+	server      *Server
+	Nick        string
+	User        string
+	RealName    string
+	Host        string
+	channels    map[string]*Channel
+	registered  bool
+	isOperator  bool
+	isAway      bool
+	AwayMessage string
+	lastPing    time.Time
+	mu          sync.RWMutex
+	sendMu      sync.Mutex
 }
 
 func NewClient(conn net.Conn, server *Server) *Client {
@@ -122,6 +124,14 @@ func (c *Client) SetOperator(isOp bool) {
 
 func (c *Client) IsOperator() bool {
 	return c.isOperator
+}
+
+func (c *Client) SetAway(isAway bool) {
+	c.isAway = isAway
+}
+
+func (c *Client) IsAway() bool {
+	return c.isAway
 }
 
 func (c *Client) UpdateLastPing() {

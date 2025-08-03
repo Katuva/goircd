@@ -60,9 +60,11 @@ func sendWhoReply(client *server.Client, target *server.Client, channelName stri
 	// Format: <channel> <user> <host> <server> <nick> <H|G>[*][@|+] :<hopcount> <real name>
 	// H = Here, G = Gone (away), * = IRC operator, @ = channel operator, + = voiced
 
-	status := "H" // Assume user is here (not away)
+	status := "H"
+	if target.IsAway() {
+		status = "G"
+	}
 
-	// Add operator/voice status
 	if target.IsOperator() {
 		status += "*"
 	}
