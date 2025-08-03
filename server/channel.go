@@ -53,6 +53,34 @@ func NewChannel(name string) *Channel {
 	}
 }
 
+func (ch *Channel) ApplyDefaultModes(modeString string) {
+	if modeString == "" {
+		return
+	}
+
+	adding := true
+	for _, char := range modeString {
+		switch char {
+		case '+':
+			adding = true
+		case '-':
+			adding = false
+		case 'n':
+			ch.SetMode(ModeNoExternalMessages, adding)
+		case 't':
+			ch.SetMode(ModeTopicSettableByOpsOnly, adding)
+		case 's':
+			ch.SetMode(ModeSecret, adding)
+		case 'p':
+			ch.SetMode(ModePrivate, adding)
+		case 'i':
+			ch.SetMode(ModeInviteOnly, adding)
+		case 'm':
+			ch.SetMode(ModeModerated, adding)
+		}
+	}
+}
+
 func (ch *Channel) AddClient(client *Client) {
 	ch.mu.Lock()
 	defer ch.mu.Unlock()

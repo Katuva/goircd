@@ -52,6 +52,7 @@ type Operator struct {
 }
 
 type ChannelsConfig struct {
+	DefaultModes       string   `yaml:"default_modes"`
 	MaxChannels        int      `yaml:"max_channels"`
 	MaxUsersPerChannel int      `yaml:"max_users_per_channel"`
 	DefaultChannels    []string `yaml:"default_channels"`

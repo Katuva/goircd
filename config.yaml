@@ -30,6 +30,7 @@ security:
       host: "*"
 
 channels:
+  default_modes: +nt
   max_channels: 20
   max_users_per_channel: 100
   default_channels:

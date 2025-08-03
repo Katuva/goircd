@@ -101,6 +101,12 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 
 		if isNewChannel {
 			channel.SetOperator(client, true)
+
+			if cfg.Channels.DefaultModes != "" {
+				channel.ApplyDefaultModes(cfg.Channels.DefaultModes)
+
+				channel.Broadcast(fmt.Sprintf(":%s MODE %s %s", client.Nick, channelName, cfg.Channels.DefaultModes))
+			}
 		}
 
 		joinMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.Host) + " JOIN " + channelName
