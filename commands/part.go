@@ -57,7 +57,7 @@ func (c *PartCommand) Execute(client *server.Client, params string) {
 			continue
 		}
 
-		partMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.Host) + " PART " + channelName
+		partMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.GetHost()) + " PART " + channelName
 		if partMessage != "" {
 			partMsg += " :" + partMessage
 		}

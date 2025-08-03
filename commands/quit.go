@@ -33,7 +33,7 @@ func (c *QuitCommand) Execute(client *server.Client, params string) {
 		quitMessage = client.Nick
 	}
 
-	quitMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.Host) + " QUIT"
+	quitMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.GetHost()) + " QUIT"
 	if quitMessage != "" {
 		quitMsg += " :" + quitMessage
 	}

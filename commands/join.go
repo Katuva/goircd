@@ -105,7 +105,7 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 			}
 		}
 
-		joinMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.Host) + " JOIN " + channelName
+		joinMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.GetHost()) + " JOIN " + channelName
 		channel.Broadcast(joinMsg)
 
 		topic, setBy, setAt := channel.GetTopic()

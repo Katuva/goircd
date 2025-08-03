@@ -99,6 +99,14 @@ func (c *Client) GetChannels() []*Channel {
 	return channels
 }
 
+func (c *Client) GetHost() string {
+	if c.isOperator && c.Vhost != "" {
+		return c.Vhost
+	}
+
+	return c.Host
+}
+
 func (c *Client) Close() {
 	c.conn.Close()
 }
