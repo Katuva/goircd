@@ -61,9 +61,20 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 		}
 
 		channel := c.server.GetChannel(channelName)
+		isNewChannel := false
+
 		if channel == nil {
+			if len(channelName) > cfg.Security.MaxChannelName {
+				client.SendNumeric(utils.ERR_BADCHANMASK, channelName+" :Channel name too long")
+				return
+			}
+
+			if len(c.server.GetAllChannels()) >= cfg.Channels.MaxChannels {
+				client.SendNumeric(utils.ERR_TOOMANYCHANNELS, channelName+" :Max channels reached")
+			}
+
 			channel = c.server.CreateChannel(channelName)
-			channel.SetOperator(client, true)
+			isNewChannel = true
 		} else {
 			if channel.HasMode(server.ModeInviteOnly) && !channel.IsInvited(client.Nick) && !channel.IsOperator(client) {
 				client.SendNumeric(utils.ERR_INVITEONLYCHAN, channelName+" :Cannot join channel (+i)")
@@ -87,6 +98,10 @@ func (c *JoinCommand) Execute(client *server.Client, params string) {
 		}
 
 		channel.AddClient(client)
+
+		if isNewChannel {
+			channel.SetOperator(client, true)
+		}
 
 		joinMsg := ":" + utils.FormatUserMask(client.Nick, client.User, client.Host) + " JOIN " + channelName
 		channel.Broadcast(joinMsg)

@@ -30,7 +30,7 @@ func (c *NickCommand) Execute(client *server.Client, params string) {
 	nickname := strings.Split(params, " ")[0]
 
 	if !utils.IsValidNickname(nickname) {
-		client.SendNumeric(utils.ERR_ERRONEUSNICKNAME, nickname+" :Erroneous nickname")
+		client.SendNumeric(utils.ERR_ERRONEUSNICKNAME, nickname+" :Invalid nickname")
 		return
 	}
 

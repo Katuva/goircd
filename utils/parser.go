@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"goircd/config"
+	"slices"
 	"strings"
 )
 
@@ -127,6 +129,16 @@ func IsValidNickname(nick string) bool {
 	}
 
 	if strings.ContainsAny(nick, " ,\x00\x07\x0D\x0A") {
+		return false
+	}
+
+	cfg := config.Get()
+
+	if len(nick) > cfg.Security.MaxNickLength {
+		return false
+	}
+
+	if slices.Contains(cfg.Security.BannedNicks, strings.ToLower(nick)) {
 		return false
 	}
 
