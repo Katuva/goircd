@@ -40,6 +40,8 @@ type SecurityConfig struct {
 	RequireAuth    bool       `yaml:"require_auth"`
 	MaxNickLength  int        `yaml:"max_nick_length"`
 	MaxChannelName int        `yaml:"max_channel_name"`
+	MaskHosts      bool       `yaml:"mask_hosts"`
+	Secret         string     `yaml:"secret"`
 	BannedNicks    []string   `yaml:"banned_nicks"`
 	AllowedHosts   []string   `yaml:"allowed_hosts"`
 	Operators      []Operator `yaml:"operators"`

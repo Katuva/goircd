@@ -1,9 +1,13 @@
 package hash
 
 import (
+	"crypto/hmac"
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
+	"fmt"
+	"goircd/config"
 	"golang.org/x/crypto/argon2"
 	"strings"
 )
@@ -49,4 +53,20 @@ func Verify(plaintext string, encodedHash string) bool {
 	testHash := argon2.IDKey([]byte(plaintext), salt, time, memory, threads, keyLen)
 
 	return subtle.ConstantTimeCompare(hash, testHash) == 1
+}
+
+func MaskIP(ip string) string {
+	cfg := config.Get()
+	secret := []byte(cfg.Security.Secret)
+
+	h := hmac.New(sha256.New, secret)
+	h.Write([]byte(ip))
+	hash := h.Sum(nil)
+
+	hexString := fmt.Sprintf("%x", hash)
+	if len(hexString) > 15 {
+		hexString = hexString[:15]
+	}
+
+	return hexString
 }

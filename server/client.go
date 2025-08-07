@@ -2,6 +2,8 @@ package server
 
 import (
 	"fmt"
+	"goircd/config"
+	"goircd/hash"
 	"net"
 	"strings"
 	"sync"
@@ -16,6 +18,7 @@ type Client struct {
 	RealName    string
 	Host        string
 	Vhost       string
+	MHost       string
 	channels    map[string]*Channel
 	registered  bool
 	isOperator  bool
@@ -30,10 +33,19 @@ type Client struct {
 func NewClient(conn net.Conn, server *Server) *Client {
 	host, _, _ := net.SplitHostPort(conn.RemoteAddr().String())
 
+	cfg := config.Get()
+
+	mhost := ""
+
+	if cfg.Security.MaskHosts {
+		mhost = hash.MaskIP(host)
+	}
+
 	return &Client{
 		conn:     conn,
 		server:   server,
 		Host:     host,
+		MHost:    mhost,
 		channels: make(map[string]*Channel),
 		lastPing: time.Now(),
 	}
@@ -100,8 +112,14 @@ func (c *Client) GetChannels() []*Channel {
 }
 
 func (c *Client) GetHost() string {
-	if c.isOperator && c.Vhost != "" {
+	if c.IsOperator() && c.Vhost != "" {
 		return c.Vhost
+	}
+
+	cfg := config.Get()
+
+	if cfg.Security.MaskHosts {
+		return c.MHost + ".irc"
 	}
 
 	return c.Host

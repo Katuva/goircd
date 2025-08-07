@@ -18,6 +18,8 @@ security:
   require_auth: false
   max_nick_length: 16
   max_channel_name: 50
+  mask_hosts: true
+  secret: "your-super-secret-string-here"
   banned_nicks:
     - "admin"
     - "root"

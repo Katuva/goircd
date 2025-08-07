@@ -79,7 +79,7 @@ func sendWhoReply(client *server.Client, target *server.Client, channelName stri
 
 	reply := channelName + " " +
 		target.User + " " +
-		target.Host + " " +
+		target.GetHost() + " " +
 		utils.SERVER_NAME + " " +
 		target.Nick + " " +
 		status + " :0 " +

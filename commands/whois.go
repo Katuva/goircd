@@ -42,13 +42,7 @@ func (c *WhoisCommand) Execute(client *server.Client, params string) {
 		return
 	}
 
-	host := targetClient.Host
-
-	if targetClient.IsOperator() && targetClient.Vhost != "" {
-		host = targetClient.Vhost
-	}
-
-	client.SendNumeric(utils.RPL_WHOISUSER, targetNick+" "+targetClient.User+" "+host+" * :"+targetClient.RealName)
+	client.SendNumeric(utils.RPL_WHOISUSER, targetNick+" "+targetClient.User+" "+targetClient.GetHost()+" * :"+targetClient.RealName)
 
 	client.SendNumeric(utils.RPL_WHOISSERVER, targetNick+" "+utils.SERVER_NAME+" :"+utils.SERVER_VERSION)
 
